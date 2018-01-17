@@ -1,0 +1,57 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#                      I N S T A L L A T I O N  &  S E T T I N G S       (SciTE4AutoIt)             #
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#                                                                                                   #
+#    Save "ShowHexColorFromCursor.lua" to your lua scripts folder or another place of your choice.  #
+#                                                                                                   #
+#    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    #                                                                                               #
+#    [SciTEStartup.lua]                                                                             #
+#                                                                                                   #
+#    Make an entry at the bottom, to load the file:                                                 #
+#                                                                                                   #
+#        LoadLuaFile("ShowHexColorFromCursor.lua", "C:\\Your Path\\with Backslash\\")               #
+#                                                                                                   #
+#    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    #                                                                                               #
+#    [SciTEUser.properties]                                                                         #
+#                                                                                                   #
+#    This entry is only required, if you'll disable the search inside include files.                #
+#    By default the search is enabled.                                                              #
+#        # "ShowHexColorFromCursor.lua", Dis/Enable search in Includes (0/1  NO/YES)                #
+#        Get.Color.Assignment.Includes=0                                                            #
+#                                                                                                   #
+#                                                                                                   #
+#    Select free command-numbers.                                                                   #
+#    Customize the following settings with this numbers.                                            #
+#                                                                                                   #
+#    works with: 0xFFAABB, #FFAABB, $COLOR_VARIABLE (au3 script)                                    #
+#                                                                                                   #
+#        # 11 Show HexColor RGB                                                                     #
+#        command.name.11.*=Show RGB-Color From Cursor                                               #
+#        command.11.*=dostring ShowHexColorFromCursor()                                             #
+#        command.mode.11.*=subsystem:lua,savebefore:yes                                             #
+#        command.shortcut.11.*=Ctrl+Shift+F11                                                       #
+#                                                                                                   #
+#        # 13 Show HexColor BGR                                                                     #
+#        command.name.13.*=Show BGR-Color From Cursor                                               #
+#        command.13.*=dostring ShowHexColorFromCursor(true)                                         #
+#        command.mode.13.*=subsystem:lua,savebefore:yes                                             #
+#        command.shortcut.13.*=Ctrl+Alt+F11                                                         #
+#                                                                                                   #
+#                                                                                                   #
+#    works with: 0xFFAABB in au3 scripts only                                                       #
+#                                                                                                   #
+#        # 14 Preview Back and Fore Color / first color value is back color (RGB)                   #
+#        command.name.14.*.au3=Preview Back and Fore Color                                          #
+#        command.14.*.au3=dostring PreviewBackForeColor()                                           #
+#        command.mode.14.*.au3=subsystem:lua,savebefore:yes                                         #
+#        command.shortcut.14.*.au3=Ctrl+Shift+F12                                                   #
+#                                                                                                   #
+#        # 16 Preview Fore and Back Color / first color value is fore color (RGB)                   #
+#        command.name.16.*.au3=Preview Fore and Back Color                                          #
+#        command.16.*.au3=dostring PreviewBackForeColor(true)                                       #
+#        command.mode.16.*.au3=subsystem:lua,savebefore:yes                                         #
+#        command.shortcut.16.*.au3=Ctrl+Alt+F12                                                     #
+#                                                                                                   #
+#    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    #                                                                                               #
+#    Restart SciTE                                                                                  #
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
