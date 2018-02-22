@@ -34,3 +34,9 @@ Shows the color from values/variables as call tip
     If only one color value was find in this line, this value will used as back color or, 
     if flag is "true", as fore color. In this cases the fore color is set to black and with 
     flag the back color is the default GUI back color "0xF0F0F0".
+    
+    DISAPPEAR THE CALLTIP
+    
+    You can disappear the calltip instantly with any key or mouse move with set variable in line 75:
+    local bCALLTIP_END_ANYKEY = true 
+    The default is false and uses the default behavior of terminating the calltip.. 
