@@ -1,4 +1,4 @@
--- TIME_STAMP   2018-02-20 18:18:22   v 0.9
+-- TIME_STAMP   2018-02-22 10:26:36   v 0.10
 
 --[[------------- I N S T A L L A T I O N   A N D   U S I N G   I N S T R U C T I O N --------------
 Save the file.
@@ -31,19 +31,16 @@ A possible alpha component is ignored.
 [NEW]
 Now be also recognized in au3 scripts, variables/constants which have an color assignment
 inside the script or inside an include file from this script.
-But it can only be one assignment per line.
+PLEASE NOTE: Each line may only contain one assignment!
 If the assignment is inside a comment line or -block, it will ignored.
-The assignment can also be build by using function(s) [from script or include files].
-example:  "Local $COLOR = '0x' & Hex(Mod(@SEC, 2) ? Random(0,0x000FFF, 1) : Random(0x001000, 0xFFF000, 1), 8)"
-But the functions must NOT CONTAIN any VARIABLES! This would require a recursive assignment search.
-Impossible if variables get values only at runtime.
 You can disable the search inside include files with an entry in SciTEUser.properties:
 #~ "ShowHexColorFromCursor.lua", Dis/Enable search in Includes (0/1  NO/YES)
 Get.Color.Assignment.Includes=0
 The default value (without settings) is '1', enabled.
 Includes in comments will ignored.
 
-Be recognized AutoIt hex color code "0x12AB34" and also HTML hex color code "#12AB34".
+Be recognized AutoIt hex color code "0x12AB34" and also HTML hex color code "#12AB34" with length from 1 to 6 hex characters.
+Possible alpha information will ignored.
 
 
 
@@ -74,7 +71,8 @@ command.mode.16.*.au3=subsystem:lua,savebefore:yes
 command.shortcut.16.*.au3=Ctrl+Alt+F12
 --------------------------------------------------------------------------------------------------]]
 
-local bDEBUG = false    -- set "true" to get debug output
+local bDEBUG = false                -- set "true" to get debug output
+local bCALLTIP_END_ANYKEY = false   -- set "true" to cancel the calltip with any key or mouse move
 
 ------------------------------------------------------------ list object to manipulate simple tables
 local objList = {
@@ -120,7 +118,8 @@ local objColor = {
 	---------------------------------------------------------------------------------------- pattern
 	pattHex = '()0x([0-9a-fA-F][0-9a-fA-F])([0-9a-fA-F][0-9a-fA-F])([0-9a-fA-F][0-9a-fA-F])',
 	pattHex2 = '[0-9a-fA-F][0-9a-fA-F]',
-	pattHexEnd = '0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]()',
+	pattHexN = '0-[x#]([0-9a-fA-F]+)',
+	pattHexEnd = '0x[0-9a-fA-F]+()',
 	pattCS1 = '^#[Cc][Oo][Mm][Mm][Ee][Nn][Tt][Ss]%-[Ss][Tt][Aa][Rr][Tt]',
 	pattCE1 = '^#[Cc][Oo][Mm][Mm][Ee][Nn][Tt][Ss]%-[Ee][Nn][Dd]',
 	pattCS2 = '^#[Cc][Ss]',
@@ -337,10 +336,8 @@ local objColor = {
 
 	----------------------------------------- grabs the color value or variable from cursor position
 	FromCursor = function(self, _fBGR)
-		local iLen = 8
 		local function isHexChar(_asc)
 			local sChar = string.char(_asc)
-			if sChar == '#' then iLen = 7 end
 			if sChar:find('[#x0-9a-fA-F]') then return true else return false end
 		end
 		local cursor = editor.CurrentPos
@@ -373,15 +370,18 @@ local objColor = {
 		while isHexChar(editor.CharAt[endPos]) do endPos = endPos + 1
 		end
 		if beginPos ~= endPos then
-			if endPos - beginPos > iLen then
-				editor:SetSelection(beginPos + iLen, beginPos)
-			elseif endPos - beginPos == iLen then
+			if beginPos > endPos then
 				editor:SetSelection(endPos, beginPos)
 			else
-				return
+				editor:SetSelection(beginPos, endPos)
 			end
-			local R,G,B = tostring(editor:GetSelText()):match('('..self.pattHex2..')('..self.pattHex2..')('..self.pattHex2..')$')
+			local sMatch = tostring(editor:GetSelText()):match(self.pattHexN)
+			if sMatch == nil then return editor:SetSelection(cursor, cursor) end
+			local sHex6 = '0x'..('0'):rep(6-sMatch:len())..sMatch
+			local iLen = sMatch:len() +2
+			local R,G,B = tostring(sHex6):match('('..self.pattHex2..')('..self.pattHex2..')('..self.pattHex2..')$')
 			if bDEBUG then output:AppendText('> DEBUG: Cursor on hex value\n') end
+			editor:SetSelection(cursor, cursor)
 			scite.SendEditor(SCI_CALLTIPSHOW, beginPos+1, (' '):rep(iLen-1))
 			scite.SendEditor(SCI_CALLTIPSETHLT, 0, iLen-1)
 			scite.SendEditor(SCI_CALLTIPSETPOSITION, true)
@@ -393,6 +393,8 @@ local objColor = {
 				if bDEBUG then output:AppendText('> DEBUG: Set Calltip RGB hex value --> "'..string.format('0x%s%s%s', B,G,R)..'"\n') end
 			end
 			self.colortip_show = true
+		else
+			editor:SetSelection(cursor, cursor)
 		end
 	end,
 	------------------------------------------------------------------------------------ /FromCursor
@@ -449,11 +451,17 @@ local objColor = {
 ShowColorEvt = EventClass:new(Common)
 
 function ShowColorEvt:OnKey()
-	if objColor.colortip_show then objColor:SetCalltipsDefault() end
+	if objColor.colortip_show then
+		if bCALLTIP_END_ANYKEY then scite.SendEditor(SCI_CALLTIPCANCEL) end
+		objColor:SetCalltipsDefault()
+	end
 end
 
 function ShowColorEvt:OnDwellStart()
-	if objColor.colortip_show then objColor:SetCalltipsDefault() end
+	if objColor.colortip_show then
+		if bCALLTIP_END_ANYKEY then scite.SendEditor(SCI_CALLTIPCANCEL) end
+		objColor:SetCalltipsDefault()
+	end
 end
 --------------------------------------------------------------------------------- /region EventClass
 
@@ -473,3 +481,5 @@ end  --> PreviewBackForeColor
 ---------------------------------------------------------------------------------------- run startup
 objColor:Startup()
 ----------------------------------------------------------------------------------------------------
+
+
