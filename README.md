@@ -27,5 +27,6 @@ If the order inside the line is reverse (first hex value is fore color), you can
 
 #### Disappear the calltip
 
-You can disappear the calltip instantly with any key or mouse move with set variable in line 75: ``local bCALLTIP_END_ANYKEY = true``  
+You can disappear the calltip instantly with any key or mouse move with set variable in line 75:  
+``local bCALLTIP_END_ANYKEY = true``  
 The default is false and uses the default behavior of terminating the calltip.
