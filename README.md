@@ -15,6 +15,7 @@ Shows the color from values/variables as call tip
     A possible alpha component is ignored.
     The assignment for color variables in au3 scripts, will searched in the opened script.    
     If not found, the include files will scanned for this.
+![](calltip_col.png)	![](show_col_var.png)
     
     PREVIEW FOR BACK AND FORE COLOR (au3 script only)
 
@@ -34,6 +35,7 @@ Shows the color from values/variables as call tip
     If only one color value was find in this line, this value will used as back color or, 
     if flag is "true", as fore color. In this cases the fore color is set to black and with 
     flag the back color is the default GUI back color "0xF0F0F0".
+![](preview_colors_1.jpg)
     
     DISAPPEAR THE CALLTIP
     
